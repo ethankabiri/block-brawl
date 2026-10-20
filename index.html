@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Block Brawl — a 3D arena fighting game you can play in the browser." />
+    <title>Block Brawl — 3D Arena Fighter</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game" aria-label="Fight arena"></canvas>
+
+    <div id="hud" class="hud hidden" aria-live="polite">
+      <div class="bars">
+        <div class="fbar left">
+          <div class="fname"><b id="p1-name">P1</b><span id="p1-wins" class="pips"></span></div>
+          <div class="hp"><div id="p1-lag" class="lag"></div><div id="p1-hp" class="fill"></div></div>
+          <div class="meter"><div id="p1-meter" class="fill"></div><i id="p1-ready">SPECIAL READY</i></div>
+        </div>
+        <div class="clock"><span id="timer">60</span><small id="round-label">Round 1</small></div>
+        <div class="fbar right">
+          <div class="fname"><span id="p2-wins" class="pips"></span><b id="p2-name">P2</b></div>
+          <div class="hp"><div id="p2-lag" class="lag"></div><div id="p2-hp" class="fill"></div></div>
+          <div class="meter"><div id="p2-meter" class="fill"></div><i id="p2-ready">SPECIAL READY</i></div>
+        </div>
+      </div>
+      <div id="combo-1" class="combo left"></div>
+      <div id="combo-2" class="combo right"></div>
+      <div id="banner" class="banner"></div>
+      <button id="pause-btn" class="icon-btn" type="button" aria-label="Pause">❚❚</button>
+    </div>
+
+    <section id="title" class="screen">
+      <div class="panel title-panel">
+        <p class="eyebrow">3D arena fighter</p>
+        <h1>Block<span>Brawl</span></h1>
+        <p class="lead">Pick a fighter, learn the chain combos, save up your meter, and win the best of three.</p>
+        <div class="menu">
+          <button class="btn primary" data-mode="arcade" type="button">Arcade ladder</button>
+          <button class="btn" data-mode="versus" type="button">2 players</button>
+          <button class="btn" data-mode="training" type="button">Training</button>
+          <button class="btn ghost" id="open-help" type="button">How to play</button>
+        </div>
+        <div class="stat-row"><span id="stat-coins"></span><span id="stat-wins"></span><span id="stat-clears"></span></div>
+        <button class="link" id="sound-btn" type="button">Sound on</button>
+      </div>
+      <p class="credit">Characters: Kenney “Blocky Characters” (CC0)</p>
+    </section>
+
+    <section id="select" class="screen hidden">
+      <div class="panel select-panel">
+        <header>
+          <button class="btn small ghost" id="select-back" type="button">← Back</button>
+          <h2 id="select-title">Choose your fighter</h2>
+          <span class="coins" id="select-coins"></span>
+        </header>
+        <div class="select-body">
+          <div id="roster" class="roster" role="listbox" aria-label="Fighters"></div>
+          <aside id="detail" class="detail"></aside>
+        </div>
+        <div class="stage-row">
+          <span>Stage</span>
+          <div id="stage-chips" class="chips"></div>
+        </div>
+        <button id="select-go" class="btn primary wide" type="button">Fight!</button>
+      </div>
+    </section>
+
+    <section id="pause" class="screen hidden">
+      <div class="panel small-panel">
+        <h2>Paused</h2>
+        <div class="menu">
+          <button class="btn primary" id="resume" type="button">Resume</button>
+          <button class="btn" id="restart" type="button">Restart fight</button>
+          <button class="btn ghost" id="quit" type="button">Quit to menu</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="screen hidden">
+      <div class="panel small-panel" id="result-panel"></div>
+    </section>
+
+    <section id="help" class="screen hidden">
+      <div class="panel help-panel">
+        <h2>How to play</h2>
+        <div class="help-grid">
+          <div>
+            <h3>Player 1</h3>
+            <p><kbd>A</kbd><kbd>D</kbd> move · <kbd>W</kbd> jump · <kbd>S</kbd> block</p>
+            <p><kbd>J</kbd> punch · <kbd>K</kbd> kick · <kbd>L</kbd> special</p>
+          </div>
+          <div>
+            <h3>Player 2</h3>
+            <p><kbd>←</kbd><kbd>→</kbd> move · <kbd>↑</kbd> jump · <kbd>↓</kbd> block</p>
+            <p><kbd>,</kbd> punch · <kbd>.</kbd> kick · <kbd>/</kbd> special</p>
+          </div>
+        </div>
+        <ul>
+          <li>Hit again while a move connects to <b>chain</b> punches into kicks for combos.</li>
+          <li>Landing and taking hits fills your <b>special meter</b>. At half full, use your special.</li>
+          <li><b>Block</b> to take only chip damage. Specials still push you back.</li>
+          <li>Win two rounds to win the fight. Earn 🪙 coins to unlock more fighters.</li>
+          <li>On phones, use the on-screen pad. Press <kbd>Esc</kbd> or ❚❚ to pause.</li>
+        </ul>
+        <button class="btn primary" id="close-help" type="button">Got it</button>
+      </div>
+    </section>
+
+    <div id="touch" class="touch hidden">
+      <div class="pad">
+        <button data-key="left" type="button" aria-label="Move left">◀</button>
+        <button data-key="right" type="button" aria-label="Move right">▶</button>
+        <button data-key="jump" type="button" aria-label="Jump">▲</button>
+        <button data-key="block" type="button" aria-label="Block">🛡</button>
+      </div>
+      <div class="acts">
+        <button data-key="punch" type="button" aria-label="Punch">Punch</button>
+        <button data-key="kick" type="button" aria-label="Kick">Kick</button>
+        <button data-key="special" type="button" aria-label="Special">Special</button>
+      </div>
+    </div>
+
+    <div id="loading" class="loading">Loading fighters…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
