@@ -60,12 +60,12 @@ function dojo(): StageScene {
   const red = mat('#9c3b30', 0.6); const wood = mat('#5a3b27', 0.7);
   for (const x of [-9, -4.5, 0, 4.5, 9]) { box(g, [0.45, 9, 0.45], [x, 4.5, -5.7], red); }
   box(g, [36, 0.4, 0.6], [0, 8.3, -5.6], wood); box(g, [36, 0.3, 0.5], [0, 6.2, -5.65], wood);
+  glow(g, '#ffb36a', [0, 4.6, -2.5], 10, 18);
   const lanterns: THREE.Mesh[] = [];
   for (const x of [-6.8, -2.2, 2.2, 6.8]) {
     const lan = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), new THREE.MeshStandardMaterial({ color: '#ffd9a0', emissive: '#ff9d4a', emissiveIntensity: 1.1, roughness: 0.5 }));
     lan.scale.y = 1.25; lan.position.set(x, 5.2, -4.6); g.add(lan); lanterns.push(lan);
     box(g, [0.02, 1.4, 0.02], [x, 6.2, -4.6], wood, false);
-    glow(g, '#ffb36a', [x, 5.0, -3.8], 6, 12);
   }
   for (const x of [-7.5, 7.5]) { box(g, [0.8, 0.6, 0.8], [x, 0.3, -3.6], wood); box(g, [0.5, 0.2, 0.5], [x, 0.7, -3.6], mat('#d8c58a')); }
   const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.9, 20), mat('#b0452f', 0.5)); drum.position.set(-8.4, 0.45, -2.4); drum.castShadow = true; g.add(drum);

@@ -12,7 +12,9 @@ type Phase = 'menu' | 'intro' | 'fight' | 'roundEnd' | 'matchEnd';
 const save = loadSave();
 const canvas = $<HTMLCanvasElement>('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+let ratio = Math.min(devicePixelRatio, 1.25);
+renderer.setPixelRatio(ratio);
+let slow = 0, fast = 0;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -21,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 120);
 const hemi = new THREE.HemisphereLight('#fff', '#888', 1);
 const sun = new THREE.DirectionalLight('#fff', 2);
 sun.position.set(-4, 9, 7); sun.castShadow = true;
-sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.mapSize.set(768, 768);
 Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 6, bottom: -3, near: 1, far: 30 });
 scene.add(hemi, sun);
 let stage: StageScene | null = null;
@@ -348,7 +350,13 @@ function setPause(p: boolean) { paused = p; show(el.pause, p); keys.clear(); }
 let last = performance.now(), time = 0;
 function frame(now: number) {
   requestAnimationFrame(frame);
-  let dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  const raw = (now - last) / 1000;
+  let dt = Math.min(0.05, raw); last = now; time += dt;
+  if (!document.hidden && raw < 0.5) {
+    if (raw > 0.03) { slow++; fast = 0; } else if (raw < 0.02) { fast++; slow = 0; }
+    if (slow > 20 && ratio > 0.5) { ratio = Math.max(0.5, ratio - 0.25); renderer.setPixelRatio(ratio); resize(); slow = 0; }
+    else if (fast > 600 && ratio < Math.min(devicePixelRatio, 1.25)) { ratio += 0.25; renderer.setPixelRatio(ratio); resize(); fast = 0; }
+  }
   stage?.update(time);
   if (f1 && phase !== 'menu') {
     let sim = paused ? 0 : dt;
